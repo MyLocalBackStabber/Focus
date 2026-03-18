@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmbientFocus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="bgDimmer"></div>
+<div id="bgBlurLayer"></div>
+<div class="site-title">Ambient Focus</div>
+
+
+<header class="top-interface">
+    <div class="glass-toggle" id="glassToggle">
+        <div class="nav-indicator" id="indicator"></div>
+        <div class="toggle-item active" onclick="switchMode('clock',0)">Clock</div>
+        <div class="toggle-item"       onclick="switchMode('pomodoro',1)">Pomodoro</div>
+        <div class="toggle-item"       onclick="switchMode('flip',2)">Flipclock</div>
+    </div>
+</header>
+
+<main class="viewport">
+
+    <section id="clock-view" class="glass-panel active-view">
+        <div class="view-content">
+            <div>
+                <h1 id="digital-clock">00:00:00</h1>
+                <div class="clock-date" id="clock-date"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pomodoro-view" class="glass-panel">
+        <div class="view-content">
+            <div class="pomo-label" id="pomo-label">FOCUS SESSION</div>
+            <h1 id="pomo-timer">25:00</h1>
+            <div class="pomo-progress"><div class="pomo-progress-bar" id="pomoBar"></div></div>
+            <div class="controls">
+                <button class="action-btn start" onclick="startPomo()">START</button>
+                <button class="action-btn stop"  onclick="stopPomo()">STOP</button>
+                <button class="action-btn"       onclick="resetPomo()">RESET</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="flip-view" class="glass-panel">
+        <div class="view-content">
+            <div class="flip-container">
+                <div class="flip-unit">
+                    <button class="arrow" onclick="adjustFlip('h',1)">▲</button>
+                    <div class="flip-card-wrap"><div class="flip-card" id="flip-h">00</div></div>
+                    <button class="arrow" onclick="adjustFlip('h',-1)">▼</button>
+                    <span class="flip-unit-label">HRS</span>
+                </div>
+                <div class="flip-sep">:</div>
+                <div class="flip-unit">
+                    <button class="arrow" onclick="adjustFlip('m',1)">▲</button>
+                    <div class="flip-card-wrap"><div class="flip-card" id="flip-m">00</div></div>
+                    <button class="arrow" onclick="adjustFlip('m',-1)">▼</button>
+                    <span class="flip-unit-label">MIN</span>
+                </div>
+                <div class="flip-sep">:</div>
+                <div class="flip-unit">
+                    <button class="arrow" onclick="adjustFlip('s',1)">▲</button>
+                    <div class="flip-card-wrap"><div class="flip-card" id="flip-s">00</div></div>
+                    <button class="arrow" onclick="adjustFlip('s',-1)">▼</button>
+                    <span class="flip-unit-label">SEC</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="action-btn start" onclick="startFlip()">START</button>
+                <button class="action-btn stop"  onclick="stopFlip()">STOP</button>
+                <button class="action-btn"       onclick="resetFlip()">RESET</button>
+            </div>
+        </div>
+        
+    </section>
+  
+
+</main>
+
+<div class="btn-cluster">
+    <button class="icon-btn" onclick="toggleSidebar(event)" title="Settings" id="settingsBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+    <button class="icon-btn" id="ambientBtn" onclick="toggleAmbientPanel(event)" title="Ambient Sounds">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    </button>
+    <button class="icon-btn" id="lofiBtn" onclick="toggleLofiPanel(event)" title="Lofi Music">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+    </button>
+    <input type="file" id="bgUpload" accept="image/*" style="display:none">
+<button class="icon-btn" onclick="document.getElementById('bgUpload').click()" title="Upload Background">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+</button>
+<div class="todo-panel" id="todoPanel">
+    <div class="todo-header">
+        <span class="todo-title">TODAY'S TASKS</span>
+        <button class="todo-clear" onclick="clearDoneTodos()">CLEAR</button>
+    </div>
+    <div class="todo-input-row">
+        <input type="text" id="todoInput" class="todo-input" placeholder="Add a task...">
+        <button class="todo-add-btn" onclick="addTodo()">+</button>
+    </div>
+    <div class="todo-list" id="todoList"></div>
+</div>
+
+</div>
+
+<!-- SETTINGS SIDEBAR -->
+<aside id="sidebar" class="glass-sidebar">
+    <div class="sidebar-section">
+        <div class="sidebar-h3">SYSTEM CONFIG</div>
+        <div class="sidebar-title">Display Settings</div>
+    </div>
+    <div class="sidebar-section slider-row">
+        <div class="slider-label-row">
+            <span class="slider-label">DARKNESS</span>
+            <span class="slider-val" id="darkVal">50%</span>
+        </div>
+        <input type="range" id="darkSlider" min="0" max="90" step="1" value="50">
+    </div>
+   
+        
+    </div>
+    <div class="divider"></div>
+    <div class="sidebar-section">
+        <div class="sidebar-title">Pomodoro</div>
+        <div class="slider-row">
+            <div class="slider-label-row">
+                <span class="slider-label">FOCUS DURATION</span>
+                <span class="slider-val" id="pomoVal">25 min</span>
+            </div>
+            <input type="range" id="pomoSlider" min="5" max="60" step="5" value="25">
+        </div>
+    </div>
+    <button class="close-btn" onclick="toggleSidebar()">✕ CLOSE</button>
+    
+</aside>
+
+<!-- AMBIENT PANEL -->
+<aside id="ambientPanel" class="glass-sidebar">
+    <div class="sidebar-section">
+        <div class="sidebar-h3">AMBIENT NOISE</div>
+        <div class="sidebar-title">Tap to toggle · Mix freely</div>
+    </div>
+    <div class="sidebar-section">
+        <div class="ambient-grid" id="ambGrid"></div>
+    </div>
+    <div class="sidebar-section slider-row">
+        <div class="slider-label-row">
+            <span class="slider-label">MASTER VOLUME</span>
+            <span class="slider-val" id="ambVolVal">70%</span>
+        </div>
+        <input type="range" id="ambVolSlider" min="0" max="100" step="1" value="70">
+    </div>
+    <div class="divider"></div>
+    <button class="close-btn" onclick="toggleAmbientPanel()">✕ CLOSE</button>
+</aside>
+
+<!-- LOFI PANEL -->
+<aside id="lofiPanel" class="glass-sidebar">
+    <div class="sidebar-section">
+        <div class="sidebar-h3">LOFI PLAYER</div>
+        <div class="sidebar-title">Background Music</div>
+    </div>
+    <div class="sidebar-section">
+        <div class="lofi-player">
+            <div class="lofi-track-info">
+                <span id="lofiTrackName">Track 1</span>
+                <span class="lofi-track-sub" id="lofiTrackSub">lofi / chill</span>
+            </div>
+            <div class="lofi-progress-wrap" id="lofiProgressWrap">
+                <div id="lofiProgressBar"></div>
+            </div>
+            <div class="lofi-controls">
+                <span class="lofi-time" id="lofiCurrentTime">0:00</span>
+                <button class="lofi-btn" onclick="lofiPrev()">⏮</button>
+                <button class="lofi-btn play-pause" id="lofiPlayBtn" onclick="lofiToggle()">▶</button>
+                <button class="lofi-btn" onclick="lofiNext()">⏭</button>
+                <span class="lofi-time" id="lofiDuration">0:00</span>
+            </div>
+        </div>
+        <div class="slider-row" style="margin-top:16px;">
+            <div class="slider-label-row">
+                <span class="slider-label">VOLUME</span>
+                <span class="slider-val" id="lofiVolVal">60%</span>
+            </div>
+            <input type="range" id="lofiVolSlider" min="0" max="100" step="1" value="60">
+        </div>
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-title">Tracks</div>
+        <div id="lofiTrackList" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+    <div class="divider"></div>
+    <button class="close-btn" onclick="toggleLofiPanel()">✕ CLOSE</button>
+</aside>
+
+<audio id="alarm" src="alarm.mp3" preload="none"></audio>
+<div id="ambientAudios"></div>
+<audio id="lofiAudio" preload="none"></audio>
+
+<script src="script.js"></script>
+  <div class="streak-badge" id="streakBadge">
+    <span class="streak-icon"></span>
+    <span class="streak-text" id="streakText">0 day streak</span>
+</div>
+<button class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen" id="fullscreenBtn" style="position:fixed; bottom:30px; right:36px; z-index:20;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+</button>
+</body>
+</html>
